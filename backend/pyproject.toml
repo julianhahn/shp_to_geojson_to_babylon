@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "shp-to-geojson"
+version = "0.1.0"
+description = ""
+authors = ["Julian Hahn <julian@seoulrobotics.org>"]
+readme = "README.md"
+packages = [{include = "shp_to_geojson"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fiona = "^1.9.3"
+pyshp = "^2.3.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
