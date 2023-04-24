@@ -84,5 +84,5 @@ for object in all_geojson:
     edited_objects.append(flattend_geometries)
 
 
-with open("test.geojson", "w") as f:
+with open("test.json", "w") as f:
     json.dump(edited_objects, f)
