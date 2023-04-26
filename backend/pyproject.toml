@@ -7,9 +7,11 @@ readme = "README.md"
 packages = [{include = "shp_to_geojson"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.8,<3.12"
 fiona = "^1.9.3"
 pyshp = "^2.3.1"
+argparse = "^1.4.0"
+pyinstaller = "^5.10.1"
 
 
 [build-system]

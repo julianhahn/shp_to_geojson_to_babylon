@@ -2,11 +2,25 @@ import os
 import glob
 import json
 import shapefile
+import argparse
 
 # create a list of all the shapefiles in the ./files directory
-shapefiles = glob.glob("./files/*.shp")
 all_geojson = []
 edited_objects = []
+
+# parse comand-line arguments
+parser = argparse.ArgumentParser(description='Convert shapefiles to flattend json for frontend')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument("-f", "--file", help="Path to input shapefile")
+group.add_argument("-d", "--dir", help="Path to input shapefile directory")
+parser.add_argument("-o", "--output", help="Path to output JSON file")
+
+args = parser.parse_args()
+
+if args.dir:
+    shapefiles = glob.glob(os.path.join(args.dir, "*.shp"))
+elif args.file:
+    shapefiles = [args.file]
 
 for shapefile_path in shapefiles:
     sf = shapefile.Reader(shapefile_path)
@@ -84,5 +98,9 @@ for object in all_geojson:
     edited_objects.append(flattend_geometries)
 
 
-with open("test.json", "w") as f:
-    json.dump(edited_objects, f)
+""" check if the user has provided an ouput path otherwise print back to the terminal """
+if args.output:
+    with open(args.output, "w") as f:
+        json.dump(edited_objects, f)
+else:
+    print(edited_objects)
