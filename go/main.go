@@ -43,12 +43,6 @@ type Record struct {
 	RecordBody
 }
 
-/*
-type AppleIcon struct {
-	Header
-	Icons []IconData // All Icons
-} */
-
 // Here is a utility function for dump the information about the file
 func (i *FileHeader) printHeader() {
 	fmt.Print("\n")
@@ -57,16 +51,6 @@ func (i *FileHeader) printHeader() {
 	fmt.Printf("FileLength: %d\n", i.FileLength)
 	fmt.Printf("ShapeType: %v\n", i.ShapeType)
 	fmt.Printf("BoundingBox: %v\n", i.boundingBoxInfo)
-}
-
-func printRecords(records []Record) {
-	for _, record := range records {
-		fmt.Printf("RecordNumber: %d\n", record.RecordHeader.RecordNumber)
-		fmt.Printf("Record ContentLength: %d\n", record.RecordHeader.ContentLength)
-		fmt.Printf("Record Numpoints: %d\n", record.RecordBody.NumPoints)
-		fmt.Printf("Points: %v\n", record.RecordBody.Points)
-	}
-
 }
 
 // ReadFileHeader uses the reader to read bytes into de AppleIcon structure
@@ -81,33 +65,16 @@ func ReadFileHeader(r *bytes.Reader) (*FileHeader, error) {
 	return &header, nil
 }
 
+type shape struct {
+	shapeType uint32
+	points    []Point
+}
+
 func ReadRecords(r *bytes.Reader) {
-	var record_number uint32
-	var content_length uint32
-	var shapeType uint32
-	var box [4]float64
-	var NumPoints uint32
-	var x__coord float64
-	var y__coord float64
+	var record Record
+	/* read new record if the file not has ended yet */
 	for {
-		err := binary.Read(r, binary.BigEndian, &record_number)
-		binary.Read(r, binary.BigEndian, &content_length)
-
-		binary.Read(r, binary.LittleEndian, &shapeType)
-		binary.Read(r, binary.LittleEndian, &box)
-		binary.Read(r, binary.LittleEndian, &NumPoints)
-		binary.Read(r, binary.LittleEndian, &x__coord)
-		binary.Read(r, binary.LittleEndian, &y__coord)
-		var count int = 24
-		var unused []byte = make([]byte, count)
-		binary.Read(r, binary.LittleEndian, &unused)
-
-		fmt.Println(record_number)
-		fmt.Println(NumPoints)
-		fmt.Println(x__coord)
-		fmt.Println(y__coord)
-
-		fmt.Print("\n")
+		err := binary.Read(r, binary.BigEndian, &record.RecordHeader.RecordNumber)
 		if err != nil {
 			if err == io.EOF {
 				fmt.Println("EOF")
@@ -116,48 +83,64 @@ func ReadRecords(r *bytes.Reader) {
 				fmt.Print(err)
 			}
 		}
-		/* 		count := 8 + 8 + (8 * record.NumPoints) + 8 + 8 + (8 * record.NumPoints) */
-		//var unused []byte = make([]byte, count)
-		/* fmt.Printf("NumPoints: %d\n", record.RecordBody.NumPoints)
+		binary.Read(r, binary.BigEndian, &record.RecordHeader.RecordNumber)
+
+		binary.Read(r, binary.LittleEndian, &record.RecordBody.ShapeType)
+		binary.Read(r, binary.LittleEndian, &record.RecordBody.BoundingBox)
+		binary.Read(r, binary.LittleEndian, &record.RecordBody.NumPoints)
+		record.RecordBody.Points = make([]Point, record.RecordBody.NumPoints)
 		for i := 0; i < int(record.RecordBody.NumPoints); i++ {
-			var point Point
-			binary.Read(r, binary.LittleEndian, &point.X)
-			binary.Read(r, binary.LittleEndian, &point.Y)
-			points = append(points, point)
+			var new_point = Point{}
+			binary.Read(r, binary.LittleEndian, &new_point.X)
+			binary.Read(r, binary.LittleEndian, &new_point.Y)
+			record.RecordBody.Points[i] = new_point
 		}
-		binary.Read(r, binary.LittleEndian, &record.RecordBody.Points)
-		binary.Read(r, binary.LittleEndian, &unused) */
+
+		var count int = 24
+		var unused []byte = make([]byte, count)
+		binary.Read(r, binary.LittleEndian, &unused)
 	}
 }
 
 func main() {
-
-	// This icon is from OpenEmu app, you can get it inside the example repository
 	data, err := ioutil.ReadFile("A1_NODE.shp")
-
 	if err != nil {
 		panic(err)
 	}
 
 	reader := bytes.NewReader(data)
+	/* always start with reading the fileHeader in the same way */
 	header, err := ReadFileHeader(reader)
+	if header.ShapeType == 1 {
+		fmt.Println("Point")
+	} else if header.ShapeType == 3 {
+		fmt.Println("PolyLine")
+	} else if header.ShapeType == 5 {
+		fmt.Println("Polygon")
+	} else if header.ShapeType == 8 {
+		fmt.Println("MultiPoint")
+	} else if header.ShapeType == 11 {
+		fmt.Println("PointZ")
+	} else if header.ShapeType == 13 {
+		fmt.Println("PolyLineZ")
+	} else if header.ShapeType == 15 {
+		fmt.Println("PolygonZ")
+	} else if header.ShapeType == 18 {
+		fmt.Println("MultiPointZ")
+	} else if header.ShapeType == 21 {
+		fmt.Println("PointM")
+	} else if header.ShapeType == 23 {
+		fmt.Println("PolyLineM")
+	} else if header.ShapeType == 25 {
+		fmt.Println("PolygonM")
+	} else if header.ShapeType == 28 {
+		fmt.Println("MultiPointM")
+	} else if header.ShapeType == 31 {
+		fmt.Println("MultiPatch")
+	}
+
 	ReadRecords(reader)
 	if err != nil {
 		panic(err)
 	}
-	header.printHeader() // Dump the information
-
-	/* 	printRecords(records) */
-
-	/* TODO to read a complete file
-	1. read file header and get the shapetype
-	2. depending on the shapetype:
-		2.1 skip the record header (no usable information)
-		2.2 jump to count of entries
-		2.3 loop through every entry and calculate on which adress in loop we can read the point
-		2.4 add the point to current shape record
-		2.5 add the record back to shape_array
-		2.6 return shape_array
-		2.7 convert to flattent json
-	*/
 }
