@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"io/ioutil"
 )
 
@@ -50,17 +51,22 @@ type AppleIcon struct {
 
 // Here is a utility function for dump the information about the file
 func (i *FileHeader) printHeader() {
+	fmt.Print("\n")
+	fmt.Printf("FileHeader:\n")
 	fmt.Printf("FileCode: %d\n", i.FileCode)
 	fmt.Printf("FileLength: %d\n", i.FileLength)
 	fmt.Printf("ShapeType: %v\n", i.ShapeType)
 	fmt.Printf("BoundingBox: %v\n", i.boundingBoxInfo)
 }
 
-func (i *Record) printRecords() {
-	fmt.Printf("RecordNumber: %d\n", i.RecordHeader.RecordNumber)
-	fmt.Printf("Record ContentLength: %d\n", i.RecordHeader.ContentLength)
-	fmt.Printf("Record Numpoints: %d\n", i.RecordBody.NumPoints)
-	fmt.Printf("Points: %v\n", i.RecordBody.Points)
+func printRecords(records []Record) {
+	for _, record := range records {
+		fmt.Printf("RecordNumber: %d\n", record.RecordHeader.RecordNumber)
+		fmt.Printf("Record ContentLength: %d\n", record.RecordHeader.ContentLength)
+		fmt.Printf("Record Numpoints: %d\n", record.RecordBody.NumPoints)
+		fmt.Printf("Points: %v\n", record.RecordBody.Points)
+	}
+
 }
 
 // ReadFileHeader uses the reader to read bytes into de AppleIcon structure
@@ -75,24 +81,53 @@ func ReadFileHeader(r *bytes.Reader) (*FileHeader, error) {
 	return &header, nil
 }
 
-func ReadRecords(r *bytes.Reader, fileLength uint32) (Record, error) {
-	var record Record
-	var points []Point = make([]Point, 0)
-	binary.Read(r, binary.BigEndian, &record.RecordHeader.RecordNumber)
-	binary.Read(r, binary.BigEndian, &record.RecordHeader.ContentLength)
-	binary.Read(r, binary.LittleEndian, &record.RecordBody.ShapeType)
-	binary.Read(r, binary.LittleEndian, &record.RecordBody.BoundingBox)
-	binary.Read(r, binary.LittleEndian, &record.RecordBody.NumPoints)
-	for i := 0; i < int(record.RecordBody.NumPoints); i++ {
-		var point Point
-		binary.Read(r, binary.LittleEndian, &point.X)
-		binary.Read(r, binary.LittleEndian, &point.Y)
-		points = append(points, point)
+func ReadRecords(r *bytes.Reader) {
+	var record_number uint32
+	var content_length uint32
+	var shapeType uint32
+	var box [4]float64
+	var NumPoints uint32
+	var x__coord float64
+	var y__coord float64
+	for {
+		err := binary.Read(r, binary.BigEndian, &record_number)
+		binary.Read(r, binary.BigEndian, &content_length)
+
+		binary.Read(r, binary.LittleEndian, &shapeType)
+		binary.Read(r, binary.LittleEndian, &box)
+		binary.Read(r, binary.LittleEndian, &NumPoints)
+		binary.Read(r, binary.LittleEndian, &x__coord)
+		binary.Read(r, binary.LittleEndian, &y__coord)
+		var count int = 24
+		var unused []byte = make([]byte, count)
+		binary.Read(r, binary.LittleEndian, &unused)
+
+		fmt.Println(record_number)
+		fmt.Println(NumPoints)
+		fmt.Println(x__coord)
+		fmt.Println(y__coord)
+
+		fmt.Print("\n")
+		if err != nil {
+			if err == io.EOF {
+				fmt.Println("EOF")
+				break
+			} else {
+				fmt.Print(err)
+			}
+		}
+		/* 		count := 8 + 8 + (8 * record.NumPoints) + 8 + 8 + (8 * record.NumPoints) */
+		//var unused []byte = make([]byte, count)
+		/* fmt.Printf("NumPoints: %d\n", record.RecordBody.NumPoints)
+		for i := 0; i < int(record.RecordBody.NumPoints); i++ {
+			var point Point
+			binary.Read(r, binary.LittleEndian, &point.X)
+			binary.Read(r, binary.LittleEndian, &point.Y)
+			points = append(points, point)
+		}
+		binary.Read(r, binary.LittleEndian, &record.RecordBody.Points)
+		binary.Read(r, binary.LittleEndian, &unused) */
 	}
-	record.RecordBody.Points = points
-	fmt.Printf("Reader index: %d\n", r.Len())
-	fmt.Printf("FileLength: %d\n", fileLength)
-	return record, nil
 }
 
 func main() {
@@ -106,12 +141,13 @@ func main() {
 
 	reader := bytes.NewReader(data)
 	header, err := ReadFileHeader(reader)
-	record, err := ReadRecords(reader, header.FileLength)
+	ReadRecords(reader)
 	if err != nil {
 		panic(err)
 	}
-	/* header.printHeader() // Dump the information */
-	record.printRecords()
+	header.printHeader() // Dump the information
+
+	/* 	printRecords(records) */
 
 	/* TODO to read a complete file
 	1. read file header and get the shapetype
