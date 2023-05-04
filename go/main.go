@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	bytes, err := os.ReadFile("/Users/julian/react-babylon-starter/go/A1_NODE.shp")
+	bytes, err := os.ReadFile("/Users/julian/react-babylon-starter/go/files/A1_NODE.shp")
+	//bytes, err := os.ReadFile("/Users/julian/react-babylon-starter/go/files/B3_SURFACEMARK.shp")
 	if err != nil {
 		fmt.Println(err)
 	}
