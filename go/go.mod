@@ -2,9 +2,13 @@ module conversion
 
 go 1.20
 
+require shp_to_geojson v0.0.1
+
 require (
-	shp_to_geojson v0.0.1
+	9fans.net/go v0.0.4 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/eaburns/Watch v0.0.0-20230318120909-d5c56e6903c8 // indirect
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gofiber/fiber/v2 v2.44.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
