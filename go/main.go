@@ -13,11 +13,11 @@ func main() {
 		Features: []shp.Feature{},
 	}
 	// read all files in directory
-	files, _ := os.ReadDir("/Users/julian/shp_to_geojson_to_babylon/go/files")
+	files, _ := os.ReadDir("/Users/julian/react-babylon-starter/go/files")
 
 	for _, file := range files {
 		if file.Name()[len(file.Name())-4:] == ".shp" {
-			path := "/Users/julian/shp_to_geojson_to_babylon/go/files/" + file.Name()
+			path := "/Users/julian/react-babylon-starter/go/files/" + file.Name()
 			bytes, err := os.ReadFile(path)
 			if err != nil {
 				fmt.Println(err)

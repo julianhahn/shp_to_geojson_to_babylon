@@ -10,12 +10,18 @@ import (
 
 func umt_to_latLng(point shp.GeoJSON_base_point) shp.GeoJSON_base_point {
 	var zone utm.Zone = utm.Zone{Number: 52, Letter: 'S', North: true}
-	var lat, lng float64 = zone.ToLatLon(point[0], point[1])
-	return shp.GeoJSON_base_point{lng, lat}
+	if len(point) == 2 {
+		var lat, lng float64 = zone.ToLatLon(point[0], point[1])
+		return shp.GeoJSON_base_point{lng, lat}
+	} else if len(point) == 3 {
+		var lat, lng float64 = zone.ToLatLon(point[0], point[1])
+		return shp.GeoJSON_base_point{lng, lat, point[2]}
+	} else {
+		return shp.GeoJSON_base_point{}
+	}
 }
 
 func convert_to_latLng(geojson_object_string string) interface{} {
-
 	r := regexp.MustCompile(`"type"\s*:\s*"(\w+)"`)
 	match := r.FindStringSubmatch(geojson_object_string)
 	if len(match) > 1 {
