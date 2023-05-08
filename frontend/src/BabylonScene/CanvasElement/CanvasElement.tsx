@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import { Feature } from "geojson";
 
 const CanvasElement = () => {
 
     let scene: BABYLON.Scene;
     let engine: BABYLON.Engine;
-    const files = useSelector((state: any) => state.files);
-    console.log(files);
+    const features = useSelector((state: any) => state.features);
+    console.log(features);
 
     useEffect(() => {
         engine = new BABYLON.Engine(canvas.current, true);
@@ -24,6 +25,12 @@ const CanvasElement = () => {
             let distance = 80;
             scene.activeCamera.position = new BABYLON.Vector3(distance, distance, distance);
         }
+
+        if (features && features.length > 0) {
+            console.log(features);
+
+        }
+
         engine.runRenderLoop(() => scene.render());
         return () => {
             scene.dispose();

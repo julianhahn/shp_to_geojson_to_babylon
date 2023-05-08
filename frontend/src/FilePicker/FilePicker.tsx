@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./index.css"
 import { useDispatch } from "react-redux";
-import { setFiles } from "../store";
+import { setFeatures } from "../store";
+
 
 const FilePicker = () => {
     const [files, setLocalFiles] = useState<File[] | null>(null);
@@ -19,15 +20,14 @@ const FilePicker = () => {
                 body: formData
             })
                 .then((response) => {
-                    return response.text()
+                    return response.json()
                 })
                 .then((data) => {
-                    console.log(data);
+                    dispatch(setFeatures(data.features));
                 })
                 .catch((error) => {
                     console.log(error);
                 });
-            console.log("fetching");
         }
     }, [files]);
 

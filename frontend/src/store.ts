@@ -1,25 +1,26 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { Feature } from "geojson";
 
-const initialFiles: { files: Blob[] } = {
-  files: [],
+const initialFeatures: { features: Feature[] } = {
+  features: [],
 };
 
-export const filesSlice = createSlice({
+export const geoJsonFeatures = createSlice({
   name: "files",
-  initialState: initialFiles,
+  initialState: initialFeatures,
   reducers: {
-    setFiles: (state, action) => {
-      state.files = [...action.payload];
+    setFeatures: (state, action) => {
+      state.features = [...action.payload];
       return state;
     },
   },
 });
 
-export const { setFiles } = filesSlice.actions;
-export default filesSlice.reducer;
+export const { setFeatures } = geoJsonFeatures.actions;
+export default geoJsonFeatures.reducer;
 
 export const store = configureStore({
   reducer: {
-    files: filesSlice.reducer,
+    files: geoJsonFeatures.reducer,
   },
 });
