@@ -9,7 +9,7 @@ require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/eaburns/Watch v0.0.0-20230318120909-d5c56e6903c8 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/gofiber/fiber/v2 v2.44.0 // indirect
+	github.com/gofiber/fiber/v2 v2.45.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/icholy/utm v1.0.1 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
@@ -23,9 +23,9 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.45.0 // indirect
+	github.com/valyala/fasthttp v1.47.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 )
 
 replace shp_to_geojson v0.0.1 => /Users/julian/shp_to_geojson
