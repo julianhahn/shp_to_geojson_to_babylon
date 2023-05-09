@@ -1,8 +1,11 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-import { Feature } from "geojson";
+import { FeatureCollection } from "geojson";
 
-const initialFeatures: { features: Feature[] } = {
-  features: [],
+const initialFeatures: { collection: FeatureCollection } = {
+  collection: {
+    type: "FeatureCollection",
+    features: [],
+  },
 };
 
 export const geoJsonFeatures = createSlice({
@@ -10,13 +13,17 @@ export const geoJsonFeatures = createSlice({
   initialState: initialFeatures,
   reducers: {
     setFeatures: (state, action) => {
-      state.features = [...action.payload];
+      state.collection.features = [...action.payload];
+      return state;
+    },
+    setCollection: (state, action) => {
+      state.collection = action.payload;
       return state;
     },
   },
 });
 
-export const { setFeatures } = geoJsonFeatures.actions;
+export const { setFeatures, setCollection } = geoJsonFeatures.actions;
 export default geoJsonFeatures.reducer;
 
 export const store = configureStore({
