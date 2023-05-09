@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	shp "shp_to_geojson"
 
@@ -11,7 +13,6 @@ import (
 )
 
 func main() {
-
 	app := fiber.New()
 	// CORS middleware
 	app.Use(cors.New(cors.Config{
@@ -58,14 +59,13 @@ func main() {
 					"error": fmt.Sprintf("Error parsing file: %v", parseErr),
 				})
 			}
-			return c.JSON(content)
+			return c.SendString(content)
 
 		} else if len(files) > 1 {
 			var featureCollection shp.FeatureCollection = shp.FeatureCollection{
 				Type:     "FeatureCollection",
 				Features: []shp.Feature{},
 			}
-
 			for _, file_ref := range files {
 				file, openError := file_ref.Open()
 				if openError != nil {
@@ -90,11 +90,9 @@ func main() {
 						"error": fmt.Sprintf("Error parsing file: %v", parseErr),
 					})
 				}
-				var newFeature shp.Feature = shp.Feature{
-					Type:       "Feature",
-					Properties: map[string]string{},
-					Geometry:   convert_to_latLng(content),
-				}
+				newFeature := shp.Feature{}
+				json.Unmarshal([]byte(content), &newFeature)
+				convert_to_latLng(&newFeature)
 				featureCollection.Features = append(featureCollection.Features, newFeature)
 			}
 			return c.JSON(featureCollection)
@@ -103,8 +101,7 @@ func main() {
 				"error": "Something went wrong",
 			})
 		}
-
 	})
 
-	app.Listen(":8080")
+	log.Fatal(app.Listen(":8080"))
 }
