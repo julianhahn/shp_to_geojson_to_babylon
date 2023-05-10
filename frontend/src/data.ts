@@ -1,4 +1,4 @@
-let background_colors = [
+let background_colors: string[] = [
   "#B2BEB5",
   "#C5DCA0",
   "#F2E8C4",
@@ -20,7 +20,7 @@ let background_colors = [
   "#B5D9E5",
   "#C5B7C7",
 ];
-let line_colors = [
+let line_colors: string[] = [
   "#F15A24",
   "#D40F0F",
   "#4D4D4D",
@@ -42,7 +42,7 @@ let line_colors = [
   "#27AE60",
   "#F1C40F",
 ];
-let point_colors = [
+let point_colors: string[] = [
   "#FFA07A",
   "#98FB98",
   "#ADD8E6",

@@ -92,7 +92,7 @@ func main() {
 				}
 				newFeature := shp.Feature{}
 				json.Unmarshal([]byte(content), &newFeature)
-				convert_to_latLng(&newFeature)
+				//convert_to_latLng(&newFeature)
 				featureCollection.Features = append(featureCollection.Features, newFeature)
 			}
 			return c.JSON(featureCollection)

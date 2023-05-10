@@ -1,11 +1,12 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import { FeatureCollection } from "geojson";
 
-const initialFeatures: { collection: FeatureCollection } = {
+const initialFeatures: { collection: FeatureCollection; objects: any } = {
   collection: {
     type: "FeatureCollection",
     features: [],
   },
+  objects: {},
 };
 
 export const geoJsonFeatures = createSlice({
