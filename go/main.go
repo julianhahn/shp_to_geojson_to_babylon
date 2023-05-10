@@ -34,6 +34,8 @@ func main() {
 		}
 		files := form.File["files"]
 
+		var should_convert bool = form.Value["WGS84"][0] == "true"
+
 		if len(files) == 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "postes files were empty",
@@ -92,7 +94,9 @@ func main() {
 				}
 				newFeature := shp.Feature{}
 				json.Unmarshal([]byte(content), &newFeature)
-				//convert_to_latLng(&newFeature)
+				if should_convert {
+					convert_to_latLng(&newFeature)
+				}
 				featureCollection.Features = append(featureCollection.Features, newFeature)
 			}
 			return c.JSON(featureCollection)

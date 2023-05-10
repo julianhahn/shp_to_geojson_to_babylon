@@ -13,6 +13,7 @@ const FilePicker = () => {
       for (let i = 0; i < files.length; i++) {
         formData.append("files", files[i]);
       }
+      formData.append("WGS84", "false")
       fetch("http://localhost:8080/shapefiles", {
         method: "POST",
         body: formData,
