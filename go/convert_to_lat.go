@@ -33,7 +33,8 @@ func convert_to_latLng(object *shp.Feature) interface{} {
 	object.Properties["Xmin"] = bounding_latLng[0]
 	object.Properties["Ymin"] = bounding_latLng[1]
 
-	switch object.Geometry {
+	var geometry_type string = object.Geometry.(map[string]interface{})["type"].(string)
+	switch geometry_type {
 	case "MultiPoint":
 		var multiPoint shp.GeoJSON_MultiPoint
 		json.Unmarshal([]byte(json_string), &multiPoint)
