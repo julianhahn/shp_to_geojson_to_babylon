@@ -4,7 +4,6 @@ import "./index.css";
 import Polygon from "./geojson_to_polygon/Polygon";
 
 const BabylonScene = () => {
-
   const [scene, setScene] = useState<BABYLON.Scene>();
 
   let engine: BABYLON.Engine;
@@ -16,7 +15,7 @@ const BabylonScene = () => {
 
     scene.createDefaultCameraOrLight(true, true, true);
     if (scene.activeCamera) {
-      let distance = 80;
+      let distance = 60;
       scene.activeCamera.position = new BABYLON.Vector3(distance, distance, distance);
     }
 

@@ -18,18 +18,35 @@ const Polygon = (props: Props) => {
   const [line_index, setLine] = useState(5);
   const [point_index, setPoint] = useState(10);
 
-  let meshes: BABYLON.Mesh[] = [];
-  const clearMeshes = () => {
-    for (let mesh of meshes) {
-      mesh.dispose();
-    }
-    meshes = [];
-  }
+  const [meshes, setMeshes] = useState<BABYLON.Mesh[]>([]);
 
+  useEffect(() => {
+    if (meshes.length > 0) {
+      const groupNode = new BABYLON.TransformNode("groupNode", props.scn);
+      for (let mesh of meshes) {
+        mesh.parent = groupNode;
+      }
+      const center = BABYLON.Vector3.Zero();
+      meshes.forEach(mesh => {
+        center.addInPlace(mesh.getBoundingInfo().boundingBox.center);
+      });
+      center.scaleInPlace(1 / meshes.length);
+      groupNode.position = center.scale(-1);
+    }
+  }, [meshes])
+
+
+  var temp_meshes: BABYLON.Mesh[] = [];
   useEffect(() => {
     if (!props.scn) return;
     const scene = props.scn;
-    if (meshes.length > 0) clearMeshes();
+
+    if (meshes.length > 0) {
+      for (let mesh of meshes) {
+        mesh.dispose();
+      }
+      setMeshes([]);
+    }
 
     var ground_material = scene.getMaterialByName("ground") as BABYLON.StandardMaterial;
     if (scene.getMaterialByName("ground") === null) {
@@ -81,7 +98,7 @@ const Polygon = (props: Props) => {
             if (vector_3.length > 2) {
               let polygon_mesh = drawPolygon(feature.properties?.name ?? "", vector_3, scene);
               polygon_mesh.material = ground_material;
-              meshes.push(polygon_mesh);
+              temp_meshes.push(polygon_mesh);
             }
           }
         }
@@ -93,7 +110,7 @@ const Polygon = (props: Props) => {
           let line_mesh = drawLine(feature.properties?.name, vector_3, scene);
           line_mesh.material = line_material;
           line_mesh.edgesColor = BABYLON.Color4.FromHexString(line_colors[line_index]);
-          meshes.push(line_mesh);
+          temp_meshes.push(line_mesh);
         }
       } else if (feature.geometry.type === "LineString") {
         let vector_3 = feature.geometry.coordinates.map((coordinate: any) => {
@@ -101,14 +118,14 @@ const Polygon = (props: Props) => {
         });
         let line_mesh = drawLine(feature.properties?.name, vector_3, scene);
         line_mesh.material = line_material;
-        meshes.push(line_mesh);
+        temp_meshes.push(line_mesh);
       }
       else if (feature.geometry.type === "Point") {
         feature.geometry.coordinates.map((coordinate: any) => {
           let point = new BABYLON.Vector3(coordinate[0] - Xmin, coordinate[2] - Zmin, coordinate[1] - Ymin);
           let point_mesh = drawPoint(feature.properties?.name, point, scene);
           point_mesh.material = point_material;
-          meshes.push(point_mesh);
+          temp_meshes.push(point_mesh);
         });
         //props.drawPoint(feature.properties?.name, vector_3);
       } else if (feature.geometry.type === "MultiPoint") {
@@ -118,16 +135,17 @@ const Polygon = (props: Props) => {
             const sphere_mesh = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.6 }, scene);
             sphere_mesh.position = vector_3;
             sphere_mesh.material = point_material;
-            meshes.push(sphere_mesh);
+            temp_meshes.push(sphere_mesh);
           } else {
             let point_mesh = drawPoint(feature.properties?.name, vector_3, scene);
             point_mesh.material = point_material;
-            meshes.push(point_mesh);
+            temp_meshes.push(point_mesh);
           }
         }
       }
     }
 
+    setMeshes(temp_meshes);
   }, [collection, background_index, line_index, point_index]);
 
   return (
