@@ -6,10 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 
-	shp "shp_to_geojson"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	shp "github.com/julianhahn/shp_to_geojson"
 )
 
 func main() {

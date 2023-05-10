@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	shp "shp_to_geojson"
 
 	"github.com/icholy/utm"
+	shp "github.com/julianhahn/shp_to_geojson"
 )
 
 func umt_to_latLng(point shp.GeoJSON_base_point) shp.GeoJSON_base_point {
